@@ -1,0 +1,35 @@
+@model EmpMaster.Models.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Employee Details";
+}
+
+<h1>Employee Details</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">SSN</dt>
+        <dd class="col-sm-10">@Model.Ssn</dd>
+
+        <dt class="col-sm-2">DOB</dt>
+        <dd class="col-sm-10">@Model.Dob.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Address</dt>
+        <dd class="col-sm-10">@Model.Address, @Model.City, @Model.State @Model.Zip</dd>
+
+        <dt class="col-sm-2">Phone</dt>
+        <dd class="col-sm-10">@Model.Phone</dd>
+
+        <dt class="col-sm-2">Join Date</dt>
+        <dd class="col-sm-10">@Model.JoinDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Exit Date</dt>
+        <dd class="col-sm-10">@(Model.ExitDate.HasValue ? Model.ExitDate.Value.ToString("yyyy-MM-dd") : "-")</dd>
+    </dl>
+
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to list</a>
+</div>
