@@ -27,6 +27,7 @@
 
 <p>
     <a class="btn btn-primary" asp-action="Create">Create New</a>
+    <a class="btn btn-info ms-2" asp-action="TitleList">Title List</a>
 </p>
 
 <table class="table table-striped">
@@ -68,3 +69,29 @@
     }
     </tbody>
 </table>
+
+@{
+    var currentPage = (int)ViewData["CurrentPage"];
+    var totalPages = (int)ViewData["TotalPages"];
+    var pageSize = (int)ViewData["PageSize"];
+}
+
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(currentPage==1?"disabled":"")">
+                <a class="page-link" asp-action="Index" asp-route-page="@(currentPage-1)" asp-route-pageSize="@pageSize" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-sortOrder="@ViewData["CurrentSort"]">Previous</a>
+            </li>
+            @for (int p = 1; p <= totalPages; p++)
+            {
+                <li class="page-item @(p==currentPage?"active":"")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-pageSize="@pageSize" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-sortOrder="@ViewData["CurrentSort"]">@p</a>
+                </li>
+            }
+            <li class="page-item @(currentPage==totalPages?"disabled":"")">
+                <a class="page-link" asp-action="Index" asp-route-page="@(currentPage+1)" asp-route-pageSize="@pageSize" asp-route-searchString="@ViewData["CurrentFilter"]" asp-route-sortOrder="@ViewData["CurrentSort"]">Next</a>
+            </li>
+        </ul>
+    </nav>
+}

@@ -1,0 +1,50 @@
+@model IEnumerable<EmpMaster.Models.TitleViewModel>
+
+@{
+    ViewData["Title"] = "Title List";
+    var currentPage = (int)ViewData["CurrentPage"];
+    var totalPages = (int)ViewData["TotalPages"];
+    var pageSize = (int)ViewData["PageSize"];
+}
+
+<h1>Title List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Min Salary</th>
+            <th>Max Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>@item.MinSalary.ToString("C")</td>
+            <td>@item.MaxSalary.ToString("C")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(currentPage==1?"disabled":"")">
+                <a class="page-link" asp-action="TitleList" asp-route-page="@(currentPage-1)" asp-route-pageSize="@pageSize">Previous</a>
+            </li>
+            @for (int p = 1; p <= totalPages; p++)
+            {
+                <li class="page-item @(p==currentPage?"active":"")">
+                    <a class="page-link" asp-action="TitleList" asp-route-page="@p" asp-route-pageSize="@pageSize">@p</a>
+                </li>
+            }
+            <li class="page-item @(currentPage==totalPages?"disabled":"")">
+                <a class="page-link" asp-action="TitleList" asp-route-page="@(currentPage+1)" asp-route-pageSize="@pageSize">Next</a>
+            </li>
+        </ul>
+    </nav>
+}

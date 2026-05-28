@@ -18,10 +18,11 @@ namespace EmpMaster.Controllers
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index(string? searchString, string? sortOrder)
+        public async Task<IActionResult> Index(string? searchString, string? sortOrder, int page = 1, int pageSize = 10)
         {
             // sortOrder values: name_asc, name_desc, title_asc, title_desc, salary_asc, salary_desc
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
             ViewData["TitleSortParm"] = sortOrder == "title_asc" ? "title_desc" : "title_asc";
             ViewData["SalarySortParm"] = sortOrder == "salary_asc" ? "salary_desc" : "salary_asc";
@@ -67,7 +68,43 @@ namespace EmpMaster.Controllers
                 _ => model.OrderBy(m => m.Name).ToList(),
             };
 
-            return View(model);
+            // Pagination
+            var totalItems = model.Count;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            page = Math.Clamp(page, 1, Math.Max(1, totalPages));
+            var paged = model.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["PageSize"] = pageSize;
+
+            return View(paged);
+        }
+
+        // GET: Employees/TitleList
+        public async Task<IActionResult> TitleList(int page = 1, int pageSize = 20)
+        {
+            var query = _context.EmployeeSalaries.AsNoTracking()
+                .GroupBy(s => s.Title)
+                .Select(g => new TitleViewModel
+                {
+                    Title = g.Key,
+                    MinSalary = g.Min(s => s.Salary),
+                    MaxSalary = g.Max(s => s.Salary)
+                })
+                .OrderBy(t => t.Title);
+
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            page = Math.Clamp(page, 1, Math.Max(1, totalPages));
+
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["PageSize"] = pageSize;
+
+            return View(items);
         }
 
         // GET: Employees/Details/5
