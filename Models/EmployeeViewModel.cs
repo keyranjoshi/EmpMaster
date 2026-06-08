@@ -48,5 +48,20 @@ namespace EmpMaster.Models
         // Current title and salary (read-only fields shown in list)
         public string? CurrentTitle { get; set; }
         public decimal? CurrentSalary { get; set; }
+        // Average salary for the employee's current title
+        public decimal? AverageTitleSalary { get; set; }
+        // Difference: CurrentSalary - AverageTitleSalary
+        public decimal? SalaryDifference { get; set; }
+        // Display-friendly string for difference, includes sign and currency formatting
+        public string SalaryDifferenceDisplay
+        {
+            get
+            {
+                if (!SalaryDifference.HasValue) return "-";
+                var diff = SalaryDifference.Value;
+                var sign = diff >= 0 ? "+" : "-";
+                return sign + Math.Abs(diff).ToString("C");
+            }
+        }
     }
 }

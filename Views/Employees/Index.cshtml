@@ -50,9 +50,16 @@
         </tr>
     </thead>
     <tbody>
+    @{
+        var snCurrentPage = (int)ViewData["CurrentPage"];
+        var snPageSize = (int)ViewData["PageSize"];
+        var startIndex = (snCurrentPage - 1) * snPageSize;
+        var row = 0;
+    }
     @foreach (var item in Model)
     {
         <tr>
+            <td>@(startIndex + (++row))</td>
             <td>@item.Name</td>
             <td>@item.Ssn</td>
             <td>@item.Dob.ToString("yyyy-MM-dd")</td>
@@ -60,6 +67,8 @@
             <td>@item.Phone</td>
             <td>@(string.IsNullOrEmpty(item.CurrentTitle) ? "-" : item.CurrentTitle)</td>
             <td>@(item.CurrentSalary.HasValue ? item.CurrentSalary.Value.ToString("C") : "-")</td>
+            <td>@(item.AverageTitleSalary.HasValue ? item.AverageTitleSalary.Value.ToString("C") : "-")</td>
+            <td>@item.SalaryDifferenceDisplay</td>
             <td>
                 <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a>
                 <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>

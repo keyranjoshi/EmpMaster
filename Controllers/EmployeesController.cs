@@ -48,6 +48,29 @@ namespace EmpMaster.Controllers
                 return vm;
             }).ToList();
 
+            // Compute average current salary per title from DB
+            var titleAverages = await _context.EmployeeSalaries
+                .AsNoTracking()
+                .Where(s => s.FromDate <= today && (s.ToDate == null || s.ToDate >= today))
+                .GroupBy(s => s.Title)
+                .Select(g => new { Title = g.Key, Avg = g.Average(s => s.Salary) })
+                .ToDictionaryAsync(x => x.Title, x => x.Avg);
+
+            // Assign average and difference to each vm
+            foreach (var vm in model)
+            {
+                if (!string.IsNullOrEmpty(vm.CurrentTitle) && titleAverages.TryGetValue(vm.CurrentTitle, out var avg))
+                {
+                    vm.AverageTitleSalary = avg;
+                    vm.SalaryDifference = vm.CurrentSalary.HasValue ? vm.CurrentSalary.Value - avg : null;
+                }
+                else
+                {
+                    vm.AverageTitleSalary = null;
+                    vm.SalaryDifference = null;
+                }
+            }
+
             // Apply search
             if (!string.IsNullOrWhiteSpace(searchString))
             {
